@@ -1,0 +1,44 @@
+
+import semillas.*
+
+describe "tests de semillas" {
+	  
+	test "menta tiene un metro de altura" {
+		var menta = new Menta(altura=1, anioObtencion=2000)
+		assert.equals(true, menta.daNuevasSemillas())
+		assert.equals(3, menta.espacioQueOcupa())
+	}
+	test "menta tiene 0.3 metros de altura"{
+		var menta = new Menta(altura= 0.3, anioObtencion=2000)
+		assert.equals(false, menta.daNuevasSemillas())
+		assert.equals(0.9, menta.espacioQueOcupa())
+	}
+	
+	test "soja de 0.6 mts"{
+		var soja = new Soja(altura =0.6, anioObtencion= 2009)
+		assert.equals(7, soja.horasDeToleranciaAlSol())
+		assert.notThat(soja.daNuevasSemillas())
+		assert.equals(0.3, soja.espacioQueOcupa())
+	}
+	test "quinoa da semillas" {
+		var quinoa = new Quinoa(altura= 2, anioObtencion= 2010 ,horasDeToleranciaAlSol = 12)
+		assert.that(quinoa.daNuevasSemillas())
+	}
+	
+	test "quinoa da semillas tambien si es de 2001" {
+		var quinoa = new Quinoa(altura= 2, anioObtencion= 2001 ,horasDeToleranciaAlSol = 9)
+		assert.that(quinoa.daNuevasSemillas())
+	}
+	test "la soja transgenica no da semillas"{
+		var sojaTrans = new SojaTransgenica(altura =1, anioObtencion= 2018)
+		assert.equals(false, sojaTrans.daNuevasSemillas())
+	}
+	test "la hierbabuena ocupa el doble de espacio que la menta y no da nuevas semillas"{
+		var unaMenta = new Menta(altura=10, anioObtencion=2000)
+		assert.equals(30,unaMenta.espacioQueOcupa())
+		var hierbabuena = new Hierbabuena(altura= 0.3, anioObtencion=2000)
+		//assert.equals(60, hierbabuena.espacioQueOcupa())
+		assert.notThat(hierbabuena.daNuevasSemillas())
+	}
+	
+}
