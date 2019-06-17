@@ -1,44 +1,93 @@
-
+import parcelas.*
 import semillas.*
 
 describe "tests de semillas" {
-	  
+	 var menta = new Menta(altura=1, anioObtencion=2000)
+	 var mentita = new Menta(altura= 0.3, anioObtencion=2000)
+	 var soja = new Soja(altura =0.6, anioObtencion= 2009)
+	 var quinoa = new Quinoa(altura= 2, anioObtencion= 2010 ,horasDeToleranciaAlSol = 12)
+	 var unaQuinoa = new Quinoa(altura= 2, anioObtencion= 2001 ,horasDeToleranciaAlSol = 9)
+	 var sojaTrans = new SojaTransgenica(altura =1, anioObtencion= 2018)
+	 var unaMenta = new Menta(altura=2, anioObtencion=2000)
+	 var hierbabuena = new Hierbabuena(altura= 2, anioObtencion=2000)
+	 var sojita = new Soja(altura =2, anioObtencion= 2009)
+	 var unaParcela = new Parcela( ancho= 20, largo=1,horasDeSolRecibidas=8 )
+	 var parcela = new Parcela( ancho= 4, largo=2,horasDeSolRecibidas=8, plantas=[hierbabuena,menta, mentita, soja] )
+	 var parcela1 = new Parcela( ancho= 20, largo=1,horasDeSolRecibidas=8, plantas=[quinoa,unaQuinoa,sojita, sojaTrans] )
+	 
 	test "menta tiene un metro de altura" {
-		var menta = new Menta(altura=1, anioObtencion=2000)
 		assert.equals(true, menta.daNuevasSemillas())
 		assert.equals(3, menta.espacioQueOcupa())
 	}
 	test "menta tiene 0.3 metros de altura"{
-		var menta = new Menta(altura= 0.3, anioObtencion=2000)
-		assert.equals(false, menta.daNuevasSemillas())
-		assert.equals(0.9, menta.espacioQueOcupa())
+		assert.equals(false, mentita.daNuevasSemillas())
+		assert.equals(0.9, mentita.espacioQueOcupa())
 	}
 	
 	test "soja de 0.6 mts"{
-		var soja = new Soja(altura =0.6, anioObtencion= 2009)
 		assert.equals(7, soja.horasDeToleranciaAlSol())
 		assert.notThat(soja.daNuevasSemillas())
 		assert.equals(0.3, soja.espacioQueOcupa())
 	}
 	test "quinoa da semillas" {
-		var quinoa = new Quinoa(altura= 2, anioObtencion= 2010 ,horasDeToleranciaAlSol = 12)
 		assert.that(quinoa.daNuevasSemillas())
 	}
 	
 	test "quinoa da semillas tambien si es de 2001" {
-		var quinoa = new Quinoa(altura= 2, anioObtencion= 2001 ,horasDeToleranciaAlSol = 9)
-		assert.that(quinoa.daNuevasSemillas())
+		assert.that(unaQuinoa.daNuevasSemillas())
 	}
 	test "la soja transgenica no da semillas"{
-		var sojaTrans = new SojaTransgenica(altura =1, anioObtencion= 2018)
 		assert.equals(false, sojaTrans.daNuevasSemillas())
 	}
 	test "la hierbabuena ocupa el doble de espacio que la menta y no da nuevas semillas"{
-		var unaMenta = new Menta(altura=10, anioObtencion=2000)
-		assert.equals(30,unaMenta.espacioQueOcupa())
-		var hierbabuena = new Hierbabuena(altura= 0.3, anioObtencion=2000)
-		//assert.equals(60, hierbabuena.espacioQueOcupa())
-		assert.notThat(hierbabuena.daNuevasSemillas())
+		assert.equals(6,unaMenta.espacioQueOcupa())
+		assert.equals(12, hierbabuena.espacioQueOcupa())
+		assert.that(hierbabuena.daNuevasSemillas())
+	}
+	test "parcela recibe 8 hs de sol por dia y tolera solo 4 plantas" {
+		assert.equals(20, unaParcela.superficie())
+		assert.equals(4, unaParcela.cantidadDePlantasQueTolera())
+		//planto 4 plantas de soja:
+		unaParcela.plantar(sojita)
+		unaParcela.plantar(sojita)
+		unaParcela.plantar(sojita)
+		unaParcela.plantar(sojita)
+		assert.equals(4, unaParcela.cantidadDePlantas())
+		assert.notThat(unaParcela.tieneComplicaciones())
+		//falla cuando quiero plantar una soja mas:
+		assert.throwsExceptionLike(new UserException("No se puede plantar"), { unaParcela.plantar(sojita) })
 	}
 	
+	test "parcelas ideales"{
+		assert.equals(2,parcela.cantidadDePlantasQueTolera() )
+		assert.equals(4,parcela.cantidadDePlantas() )
+		assert.that(menta.parcelaIdeal(parcela))
+		assert.that(hierbabuena.parcelaIdeal(parcela))
+		assert.equals(2, hierbabuena.altura())
+		assert.notThat(unaQuinoa.parcelaIdeal(parcela))
+		assert.notThat(soja.parcelaIdeal(parcela))
+		assert.notThat(sojaTrans.parcelaIdeal(parcela))
+	}
+	test "parcelas ecologicas e industriales"{
+		var parcelaEco = new ParcelaEcologica( ancho= 4, largo=2,horasDeSolRecibidas=5,plantas=[soja,menta] )
+		var parcelaInd = new ParcelaIndustrial( ancho= 2, largo=8,horasDeSolRecibidas=3, plantas=[sojita,sojaTrans])
+		assert.notThat(parcelaEco.tieneComplicaciones())
+		assert.that(parcelaEco.seAsociaBienUnaPlanta(menta))
+		assert.notThat(parcelaEco.seAsociaBienUnaPlanta(soja))
+		assert.notThat(soja.parcelaIdeal(parcelaEco))
+		assert.that(menta.parcelaIdeal(parcelaEco))
+		assert.notThat(parcelaInd.tieneComplicaciones())
+		assert.notThat(parcelaInd.seAsociaBienUnaPlanta(sojita))
+		assert.notThat(parcelaInd.seAsociaBienUnaPlanta(sojaTrans))
+	}
+	
+	test "inta"{
+		inta.parcelas([parcela, unaParcela, parcela1])
+		assert.equals(3, inta.cantidadDeParcelas())
+		assert.equals(8, inta.cantidadDePlantasEnParcelas())
+		assert.equals(3, inta.promedioDePlantasPorParcela())
+		
+	}
 }
+
+	

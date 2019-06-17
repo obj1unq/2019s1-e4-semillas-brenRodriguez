@@ -17,12 +17,12 @@ class Parcela {
 	 	}else{
 	 		cantidad = (self.superficie() / 3) + largo
 	 	}
-	 	return cantidad
+	 	return cantidad.roundUp()
 	}
 	
-	method tieneComplicaciones() = self.plantas().any({planta => planta.hsDeToleranciaAlSol() < self.horasDeSolRecibidas()})
+	method tieneComplicaciones() = self.plantas().any({planta => planta.horasDeToleranciaAlSol() < self.horasDeSolRecibidas()})
 	
-	method recibeMasHorasDeSolQuePlanta(planta) = (self.horasDeSolRecibidas() - planta.hsDeToleranciaAlSol()) >= 2
+	method recibeMasHorasDeSolQuePlanta(planta) = (self.horasDeSolRecibidas() - planta.horasDeToleranciaAlSol()) >= 2
 
 	method plantar(nuevaPlanta){
 		if(self.cantidadDePlantas() == self.cantidadDePlantasQueTolera() or self.recibeMasHorasDeSolQuePlanta(nuevaPlanta) ){
@@ -40,7 +40,7 @@ class ParcelaEcologica inherits Parcela {
 
 class ParcelaIndustrial inherits Parcela {
 	method seAsociaBienUnaPlanta(planta){
-	 	return not self.cantidadDePlantas() <= 2 and planta.esFuerte()
+	 	return not (self.cantidadDePlantas() <= 2) and planta.esFuerte()
 	 }
 }
 
@@ -53,6 +53,7 @@ object inta{
 	method cantidadDeParcelas() = self.parcelas().size()
 	method cantidadDePlantasEnParcelas() = self.parcelas().map({unaParcela => unaParcela.cantidadDePlantas()}).sum()
 	
-	method promedioDePlantasPorParcela() = self.cantidadDePlantasEnParcelas() / self.cantidadDeParcelas()
+	method promedioDePlantasPorParcela() = (self.cantidadDePlantasEnParcelas() / self.cantidadDeParcelas()).roundUp()
+	
 	
 }
